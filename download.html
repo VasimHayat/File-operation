@@ -1,0 +1,68 @@
+<input type='file' accept='image/*' onchange='openFile(event)'><br>
+<img id='output'>
+<script>
+//   var openFile = function(event) {
+//     var input = event.target;
+
+//     var reader = new FileReader();
+//     reader.onload = function(){
+//       var dataURL = reader.result;
+//       var output = document.getElementById('output');
+//       output.src = dataURL;
+//     };
+//     reader.readAsDataURL(input.files[0]);
+//   };
+
+function getArrayBufferFromBase64(base64) {
+        var binary_string = window.atob(base64);
+        var len = binary_string.length;
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
+function getBase64ByteString(arrayBuffer){
+    var binArray = new Uint8Array(arrayBuffer);
+        var str = "";
+        for (var i = 0; i < binArray.length; i++) {
+            str += String.fromCharCode(parseInt(binArray[i]));
+        }
+        return btoa(str);
+}
+
+function downloadFile(fileObject,mimeString,fileName){
+         var blob = new Blob([fileObject], {type: mimeString}); 
+        var a = window.document.createElement('a');
+        a.href = window.URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a)
+}
+
+  var openFile = function(event) {
+    var input = event.target;
+    var _finalData ;
+
+    var output = document.getElementById('output');
+     //output.src = dataURL;
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      var arrayBuffer = reader.result;
+      var file = input.files[0]; 
+      console.log(arrayBuffer)
+      var byteString = getBase64ByteString(arrayBuffer);
+      var _arrayBuffer = getArrayBufferFromBase64(byteString);
+      console.log(byteString)
+      console.log(_arrayBuffer)
+      downloadFile(_arrayBuffer,file.type,file.name)
+       
+    };
+    reader.readAsArrayBuffer(input.files[0]);
+
+    
+};
+</script>
